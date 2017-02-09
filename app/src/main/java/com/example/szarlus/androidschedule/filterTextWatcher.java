@@ -1,5 +1,6 @@
 package com.example.szarlus.androidschedule;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -35,6 +36,8 @@ public class FilterTextWatcher implements TextWatcher {
         Log.d(TAG, "start: "+start);
         Log.d(TAG, "seq: "+before);
         Log.d(TAG, "seq: "+count);
+        MainActivity activity = (MainActivity) this.context;
+        activity.filter(charSequence);
 //        this.context.getApplicationContext().
     }
 

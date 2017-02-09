@@ -19,9 +19,9 @@ import android.widget.TextView;
 
 import com.example.szarlus.androidschedule.db.TodoContract;
 import com.example.szarlus.androidschedule.db.TodoDbHelper;
-import com.example.szarlus.androidschedule.FilterTextWatcher;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         logText("In MainActivity");
         this.todoDbHelper = new TodoDbHelper(this);
         updateUI();
-        filter("vuvu");
     }
 
     public void logText(String text) {
@@ -84,11 +83,10 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void filter(String sequence) {
+    public void filter(CharSequence sequence) {
         Filter f = getFilter();
 
         f.filter(sequence);
-        updateUI();
         logText("filtered");
     }
 
@@ -123,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                             for (int k= 0; k<wordCount; k++) {
                                 final String word = words[k];
 
-                                if(word.startsWith(soughtSequence)) {
+                                if(word.contains(soughtSequence)) {
                                     newValues.add(item);
                                     break;
                                 }
@@ -139,11 +137,16 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                    todosList = (ArrayList<String>) filterResults.values;
+//                    updateUI();
+                    ArrayList<String> todosListPublish = (ArrayList<String>) filterResults.values;
                     logText(todosList.toString());
                     if(filterResults.count > 0) {
+                        adapter.clear();
+                        adapter.addAll(todosListPublish);
                         adapter.notifyDataSetChanged();
                     } else {
+                        adapter.clear();
+                        adapter.addAll(todosListPublish);
                         adapter.notifyDataSetInvalidated();
                     }
                 }
@@ -181,10 +184,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if(adapter == null) {
-            adapter = new ArrayAdapter<>(this,
+            adapter = new ArrayAdapter<String>(this,
                     R.layout.todo_item,
                     R.id.todo_title,
-                    todosList);
+                    (List<String>) todosList.clone());
             this.todoListView.setAdapter(this.adapter);
         } else {
             adapter.clear();

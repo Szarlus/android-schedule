@@ -11,7 +11,7 @@
     tools:context="com.example.szarlus.androidschedule.MainActivity">
 
     <EditText xmlns:android="http://schemas.android.com/apk/res/android"
-        android:text="text"
+        android:text=""
         android:id="@+id/editText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
