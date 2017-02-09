@@ -21,7 +21,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:text="@string/todo_done"
-        android:onClick="deleteTodo"
-        android:drawableLeft="@drawable/ic_finish_todo"/>
+        android:drawableLeft="@drawable/ic_finish_todo"
+        android:elevation="0dp"
+        android:onClick="deleteTodo" />
 
 </RelativeLayout>
