@@ -18,7 +18,7 @@ public class TodoDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String createTableSql = "CREATE TABLE " + TodoContract.TodoEntry.TABLE +
                 " ( " + TodoContract.TodoEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                TodoContract.TodoEntry.COL_TODO_TITLE + " TEXT NOT NULL); ";
+                TodoContract.TodoEntry.COL_TODO_TITLE + " TEXT NOT NULL, " + TodoContract.TodoEntry.COL_TODO_DONE+ " BOOLEAN DEFAULT 0 CHECK (" + TodoContract.TodoEntry.COL_TODO_DONE + " IN (0,1))); ";
 
         sqLiteDatabase.execSQL(createTableSql);
     }

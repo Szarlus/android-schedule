@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.ListView;
@@ -153,6 +154,23 @@ public class MainActivity extends AppCompatActivity {
             };
         }
         return arrayFilter;
+    }
+
+    public void onCheckboxClicked(View view) {
+        // Is the view now checked?
+        boolean checked = ((CheckBox) view).isChecked();
+
+        // Check which checkbox was clicked
+        switch(view.getId()) {
+//            case R.id.checkbox_meat:
+//                if (checked)
+//                // Put some meat on the sandwich
+//                else
+//                // Remove the meat
+//                break;
+            default:
+                break;
+        }
     }
 
     public void storeTodo(EditText todoEditText) {
