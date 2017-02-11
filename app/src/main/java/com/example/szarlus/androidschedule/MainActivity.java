@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.szarlus.androidschedule.db.TodoContract;
 import com.example.szarlus.androidschedule.db.TodoDbHelper;
@@ -116,17 +118,21 @@ public class MainActivity extends AppCompatActivity {
                         for(int i = 0; i < count; i++) {
                             String item = values.get(i);
 
-                            String[] words = item.toString().toLowerCase().split(" ");
-                            int wordCount = words.length;
-
-                            for (int k= 0; k<wordCount; k++) {
-                                final String word = words[k];
-
-                                if(word.contains(soughtSequence)) {
-                                    newValues.add(item);
-                                    break;
-                                }
+                            if(item.toLowerCase().contains(soughtSequence)) {
+                                newValues.add(item);
                             }
+
+//                            String[] words = item.toString().toLowerCase().split(" ");
+//                            int wordCount = words.length;
+//
+//                            for (int k= 0; k<wordCount; k++) {
+//                                final String word = words[k];
+//
+//                                if(word.contains(soughtSequence)) {
+//                                    newValues.add(item);
+//                                    break;
+//                                }
+//                            }
                         }
 
                         results.values = newValues;
@@ -159,45 +165,76 @@ public class MainActivity extends AppCompatActivity {
     public void onCheckboxClicked(View view) {
         // Is the view now checked?
         boolean checked = ((CheckBox) view).isChecked();
+        View parent = (View) view.getParent();
+        TextView todoTextView = (TextView) parent.findViewById(R.id.todo_title);
+        String todoTitle = String.valueOf(todoTextView.getText());
 
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TodoContract.TodoEntry.COL_TODO_DONE, checked ? 1 : 0);
+
+        SQLiteDatabase sqliteDatabase = this.todoDbHelper.getWritableDatabase();
+        sqliteDatabase.update(TodoContract.TodoEntry.TABLE, contentValues,
+                TodoContract.TodoEntry.COL_TODO_TITLE + " = ?",
+                new String[]{todoTitle});
         // Check which checkbox was clicked
-        switch(view.getId()) {
+//        switch(view.getId()) {
 //            case R.id.checkbox_meat:
 //                if (checked)
 //                // Put some meat on the sandwich
 //                else
 //                // Remove the meat
 //                break;
-            default:
-                break;
-        }
-    }
+//            default:
+//                break;
+//    }
 
-    public void storeTodo(EditText todoEditText) {
-        String todoText = String.valueOf(todoEditText.getText());
-        SQLiteDatabase sqliteDatabase = this.todoDbHelper.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(TodoContract.TodoEntry.COL_TODO_TITLE, todoText);
-        sqliteDatabase.insertWithOnConflict(TodoContract.TodoEntry.TABLE,
-                null,
-                contentValues,
-                sqliteDatabase.CONFLICT_REPLACE);
         sqliteDatabase.close();
 
         updateUI();
     }
 
+    public void storeTodo(EditText todoEditText) {
+        if(this.todosList.contains(todoEditText.getText().toString())) {
+            Toast toast = Toast.makeText(getApplicationContext(), "This todo already exists", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        } else {
+            String todoText = String.valueOf(todoEditText.getText());
+            SQLiteDatabase sqliteDatabase = this.todoDbHelper.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(TodoContract.TodoEntry.COL_TODO_TITLE, todoText);
+            sqliteDatabase.insertWithOnConflict(TodoContract.TodoEntry.TABLE,
+                    null,
+                    contentValues,
+                    sqliteDatabase.CONFLICT_REPLACE);
+            sqliteDatabase.close();
+
+            updateUI();
+        }
+    }
+
     public void updateUI() {
         this.todoListView = (ListView) findViewById(R.id.todos_list);
+
+        List<Todo> todoObjList = new ArrayList<Todo>();
 
         todosList = new ArrayList<>();
         SQLiteDatabase sqliteDatabase = this.todoDbHelper.getReadableDatabase();
         Cursor cursor = sqliteDatabase.query(TodoContract.TodoEntry.TABLE,
-                new String[]{TodoContract.TodoEntry._ID, TodoContract.TodoEntry.COL_TODO_TITLE},
-                null,null,null,null,null);
+                new String[]{TodoContract.TodoEntry._ID, TodoContract.TodoEntry.COL_TODO_TITLE, TodoContract.TodoEntry.COL_TODO_DONE},
+                null,null,null,null, TodoContract.TodoEntry.COL_TODO_DONE+","+ TodoContract.TodoEntry.COL_TODO_TITLE);
         while (cursor.moveToNext()) {
+
             int index = cursor.getColumnIndex(TodoContract.TodoEntry.COL_TODO_TITLE);
             todosList.add(cursor.getString(index));
+
+            int id = cursor.getInt(cursor.getColumnIndex(TodoContract.TodoEntry._ID));
+            String title = cursor.getString(cursor.getColumnIndex(TodoContract.TodoEntry.COL_TODO_TITLE));
+            boolean done = cursor.getInt(cursor.getColumnIndex(TodoContract.TodoEntry.COL_TODO_DONE)) == 1;
+
+            Todo newTodo = new Todo(id, title, done);
+            todoObjList.add(newTodo);
+
             Log.d(TAG, "Todo entry: " + cursor.getString(index));
         }
 

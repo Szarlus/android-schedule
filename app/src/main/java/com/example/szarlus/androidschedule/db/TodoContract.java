@@ -8,7 +8,7 @@ import android.provider.BaseColumns;
 
 public class TodoContract {
     public static final String DB_NAME = "com.example.szarlus.androidschedule.db";
-    public static final int DB_VERSION = 3;
+    public static final int DB_VERSION = 7;
 
     public class TodoEntry implements BaseColumns {
         public static final String TABLE = "todos";
