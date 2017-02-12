@@ -8,15 +8,19 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onCheckboxClicked"/>
+        android:onClick="onCheckboxClicked"
+        android:id="@+id/todo_done_check"/>
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/todo_title"
         android:text=""
-        android:paddingLeft="40dp"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:onClick="onEditClicked"
+        android:layout_toRightOf="@id/todo_done_check"
+        android:layout_toLeftOf="@id/todo_delete"
+        />
 
     <Button
         android:layout_width="wrap_content"

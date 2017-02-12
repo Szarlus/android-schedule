@@ -265,4 +265,39 @@ public class MainActivity extends AppCompatActivity {
         sqliteDatabase.close();
         updateUI();
     }
+
+    public void onEditClicked(View view) {
+        logText("Edit text clicked");
+        TextView editText = (TextView) view;
+        final String oldText = editText.getText().toString();
+        final EditText todoEditText = new EditText(this);
+        todoEditText.setText(oldText);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Edit Todo")
+                .setMessage("What is there to do?")
+                .setView(todoEditText)
+                .setPositiveButton("Edit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        editTodo(oldText, todoEditText.getText().toString());
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.show();
+
+    }
+
+    private void editTodo(String oldText, String newText) {
+
+        SQLiteDatabase sqliteDatabase = this.todoDbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TodoContract.TodoEntry.COL_TODO_TITLE, newText);
+        sqliteDatabase.update(TodoContract.TodoEntry.TABLE, contentValues,
+                TodoContract.TodoEntry.COL_TODO_TITLE + " = ?",
+                new String[]{oldText});
+        sqliteDatabase.close();
+
+        updateUI();
+    }
 }
